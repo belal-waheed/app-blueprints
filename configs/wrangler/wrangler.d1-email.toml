@@ -1,0 +1,18 @@
+name = "my-fullstack-app"
+main = "worker/src/index.ts"
+compatibility_date = "2026-06-01"
+compatibility_flags = ["nodejs_compat"]
+
+[assets]
+directory = "./dist"
+binding = "ASSETS"
+
+# D1 Serverless SQLite Database
+[[d1_databases]]
+binding = "DB"
+database_name = "production-db"
+database_id = "your-database-id-here"
+
+# Cloudflare Email Service (Outbound send_email binding)
+[[send_email]]
+name = "Mail_Pass"
