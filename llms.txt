@@ -1,0 +1,30 @@
+# App Blueprints: AI Documentation Index
+
+> Title: App Blueprints
+> Author: Belal Waheed
+> Description: Production full-stack starter templates, snippets, and AI agent knowledge engine.
+> Repository: https://github.com/belal-waheed/app-blueprints
+
+## Core Documentation
+- [AGENTS.md](AGENTS.md): AI Agent operating instructions, system guardrails, and implementation prompts.
+- [PATTERN_TEMPLATE.md](PATTERN_TEMPLATE.md): Expansion blueprint for adding new architectural patterns.
+
+## Domain-Driven Snippets
+- [Auth: PBKDF2 Web Crypto](snippets/auth/pbkdf2-crypto.ts): Web Crypto API password hashing and verification.
+- [Auth: 6-Box Segmented OtpInput](snippets/auth/otp-input-component.tsx): Auto-advancing, paste-friendly OTP component.
+- [Auth: Password Strength Meter](snippets/auth/password-strength.ts): 3-tier password complexity evaluation.
+- [Email: RFC 5322 MIME Builder](snippets/email/raw-mime-builder.ts): Multipart/alternative email envelope constructor.
+- [Email: Cloudflare send_email](snippets/email/cloudflare-send-email.ts): EmailMessage dispatcher with Resend fallback.
+- [Sync: LWW Conflict Resolution](snippets/sync-offline/lww-merge-algorithm.ts): Last-Write-Wins deterministic record merging.
+- [Sync: Tombstone Deletions](snippets/sync-offline/tombstone-delete-handler.ts): Soft-delete persistence for multi-device sync.
+- [Sync: BroadcastChannel Reactivity](snippets/sync-offline/broadcast-channel-sync.ts): Cross-tab live synchronization.
+- [Scraping: Multi-Tier Metadata Extractor](snippets/scraping/multi-tier-metadata.ts): GitHub, Wikipedia, YouTube, Spotify, Reddit, AniList scrapers.
+- [Scraping: Anti-Bot Cloud Bypass](snippets/scraping/microlink-anti-bot-cloud.ts): Headless cloud renderer for 403-protected pages.
+- [UI: Back-Button Modal Trapper](snippets/ui-navigation/modal-back-navigation.ts): Android back gesture and popstate navigation handler.
+- [Testing: Microsoft Edge Playwright Harness](snippets/testing-automation/edge-playwright-harness.ts): Headless Edge browser automation config.
+
+## Starter Templates
+- [Template: 3-Stage Auth Wizard](templates/auth-recovery-wizard/README.md): Standalone password recovery app.
+- [Template: Offline-First PWA Sync](templates/pwa-offline-sync/README.md): Dexie.js + Cloudflare D1 multi-device sync app.
+- [Template: Universal Scraper API](templates/universal-media-scraper/README.md): Fast-path metadata & cover image API.
+- [Template: Edge Browser Automation](templates/edge-browser-automation/README.md): Playwright test suite for Edge.

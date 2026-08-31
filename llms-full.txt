@@ -1,0 +1,32 @@
+# App Blueprints: Full LLM Context Engine
+
+This document contains the unrolled summary of all architecture standards, patterns, and code snippets in the `belal-waheed/app-blueprints` repository for direct injection into LLM context windows.
+
+---
+
+## 1. Authentication & Password Recovery Wizard
+- **Frontend:** 3-stage wizard (`forgot_request` -> `forgot_otp` -> `forgot_new_password`) using Framer Motion directional slide variants.
+- **OTP Input:** 6 individual cells with auto-focus advancing, backspace handling, clipboard paste sanitization, and auto-submit on the 6th digit.
+- **Backend:** `POST /api/auth/forgot-password` (6-digit code, 15-min TTL), `POST /api/auth/verify-code` (code validation), `POST /api/auth/reset-password` (PBKDF2 hashing).
+
+---
+
+## 2. Offline-First PWA Sync & Android 12 Share Target
+- **Storage:** Dexie.js (IndexedDB) with local-first reads/writes.
+- **Sync Protocol:** Bidirectional sync using Last-Write-Wins (LWW) timestamp comparison (`record.updatedAt > local.updatedAt`).
+- **Tombstone Deletion:** Deleted records store `isDeleted: true` to prevent resurrection.
+- **Cross-Tab Live Reactivity:** `new BroadcastChannel('app-sync-channel')` triggers instant UI updates across browser tabs.
+- **Android Web Share Target:** PWA manifest configures `share_target: { action: '/share', method: 'GET', params: { title: 'title', text: 'text', url: 'url' } }` for sub-50ms link capturing.
+
+---
+
+## 3. Universal Media & Link Metadata Scraper
+- **Tier 1 (Fast-Path APIs):** GitHub API + social card preview, Wikipedia summary API, YouTube oEmbed, Spotify oEmbed, Reddit JSON, AniList GraphQL.
+- **Tier 2 (HTML & Schema.org):** Extracts OpenGraph (`og:image`), Twitter cards (`twitter:image`), Schema.org JSON-LD (`Article`, `Product`, `VideoObject`).
+- **Tier 3 (Anti-Bot Bypass):** Microlink API fallback for Cloudflare Turnstile or JS-rendered websites.
+
+---
+
+## 4. Native Back-Button Navigation Protection
+- **Problem:** Pressing hardware/browser Back in a PWA closes the application instead of the open modal dialog.
+- **Solution:** `useModalBackNavigation` hook pushes `history.pushState({ modalOpen: true }, "")` on open and closes the modal on `popstate`.
