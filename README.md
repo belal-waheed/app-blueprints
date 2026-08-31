@@ -62,7 +62,8 @@ graph TD
     CFEmail -.->|Fallback| Resend[Resend REST API]
     
     Worker -->|Multi-Tier Scraping| Scraper[Metadata Engine]
-    Scraper -->|Fast-Path APIs| APIs[GitHub / YouTube / Spotify / Wikipedia]
+    Scraper -->|Fast-Path APIs| APIs[GitHub / YouTube / Spotify / Wikipedia / Reddit]
+    Scraper -->|Article Extraction & Reader Mode| Reader[@extractus/article-extractor]
     Scraper -->|Anti-Bot Cloud Renderer| Microlink[Microlink Cloud API]
 ```
 
@@ -90,8 +91,7 @@ Copy-paste atomic, zero-dependency, production-grade building blocks:
 - [`otp-input-component.tsx`](snippets/auth/otp-input-component.tsx): Accessible 6-box segmented OTP component with auto-advance, backspace navigation, and clipboard paste support.
 - [`password-strength.ts`](snippets/auth/password-strength.ts): 3-tier password complexity evaluation.
 
-### 📧 Transactional Email Engine (`snippets/email/`)
-- [`raw-mime-builder.ts`](snippets/email/raw-mime-builder.ts): RFC 5322 multipart/alternative MIME envelope builder for Cloudflare Workers.
+### 📧 Transactional Email Engine (`snippets/email/`)\n- [`raw-mime-builder.ts`](snippets/email/raw-mime-builder.ts): RFC 5322 multipart/alternative MIME envelope builder for Cloudflare Workers.
 - [`cloudflare-send-email.ts`](snippets/email/cloudflare-send-email.ts): Resilient `new EmailMessage(from, to, rawMime)` dispatcher with Resend fallback.
 
 ### ⚡ Offline-First Sync & PWA (`snippets/sync-offline/`)
@@ -99,8 +99,9 @@ Copy-paste atomic, zero-dependency, production-grade building blocks:
 - [`tombstone-delete-handler.ts`](snippets/sync-offline/tombstone-delete-handler.ts): Tombstone record creation and deletion propagation.
 - [`broadcast-channel-sync.ts`](snippets/sync-offline/broadcast-channel-sync.ts): Cross-tab real-time reactivity using Web `BroadcastChannel`.
 
-### 🌐 Universal Metadata Scraper (`snippets/scraping/`)
-- [`multi-tier-metadata.ts`](snippets/scraping/multi-tier-metadata.ts): High-speed extractors for GitHub, Wikipedia, YouTube, Spotify, Reddit, and AniList.
+### 🌐 Universal Metadata Scraper & Auto-Grouper (`snippets/scraping/`)
+- [`multi-tier-metadata.ts`](snippets/scraping/multi-tier-metadata.ts): Unified extraction engine with SSRF defense, tracking sanitizer, media adapters (YouTube, TikTok, X, GitHub, Wikipedia, Reddit, Spotify), JSON-LD parser, and `@extractus/article-extractor` reader mode & reading time calculation.
+- [`smart-auto-grouper.ts`](snippets/scraping/smart-auto-grouper.ts): Zero-dependency domain auto-grouper mapping URLs into smart groups (`YT`, `Insta`, `X`) with custom vault scoping.
 - [`schema-json-ld-parser.ts`](snippets/scraping/schema-json-ld-parser.ts): OpenGraph, Twitter Card, and Schema.org JSON-LD parser.
 - [`microlink-anti-bot-cloud.ts`](snippets/scraping/microlink-anti-bot-cloud.ts): Headless cloud-renderer fallback for 403-protected pages.
 
@@ -133,7 +134,7 @@ When an item is deleted offline, do not remove the record locally. Instead, writ
 <details>
 <summary><strong>4. Why does is-a.dev reject CNAME records pointing to .workers.dev?</strong></summary>
 
-The `is-a.dev` registry disallows direct CNAME records to `.workers.dev` to prevent subdomain takeovers. In your domain JSON file, specify `"URL": "https://your-app.workers.dev"` to generate a secure HTTP 301 redirect.
+The `is-a.dev` registry disallows direct CNAME records to `.workers.dev` to prevent subdomain takeovers. In your domain JSON file, specify `\"URL\": \"https://your-app.workers.dev\"` to generate a secure HTTP 301 redirect.
 </details>
 
 ---
