@@ -1,32 +1,89 @@
-# App Blueprints: Full LLM Context Engine
+# App Blueprints: Full LLM Context Engine (llms-full.txt)
 
-This document contains the unrolled summary of all architecture standards, patterns, and code snippets in the `belal-waheed/app-blueprints` repository for direct injection into LLM context windows.
-
----
-
-## 1. Authentication & Password Recovery Wizard
-- **Frontend:** 3-stage wizard (`forgot_request` -> `forgot_otp` -> `forgot_new_password`) using Framer Motion directional slide variants.
-- **OTP Input:** 6 individual cells with auto-focus advancing, backspace handling, clipboard paste sanitization, and auto-submit on the 6th digit.
-- **Backend:** `POST /api/auth/forgot-password` (6-digit code, 15-min TTL), `POST /api/auth/verify-code` (code validation), `POST /api/auth/reset-password` (PBKDF2 hashing).
+> Repository: https://github.com/belal-waheed/app-blueprints
+> Architecture: Cloudflare Serverless + React 19 + Tailwind v4 + Offline-First PWA + AI Agent Knowledge Engine
 
 ---
 
-## 2. Offline-First PWA Sync & Android 12 Share Target
-- **Storage:** Dexie.js (IndexedDB) with local-first reads/writes.
-- **Sync Protocol:** Bidirectional sync using Last-Write-Wins (LWW) timestamp comparison (`record.updatedAt > local.updatedAt`).
-- **Tombstone Deletion:** Deleted records store `isDeleted: true` to prevent resurrection.
-- **Cross-Tab Live Reactivity:** `new BroadcastChannel('app-sync-channel')` triggers instant UI updates across browser tabs.
-- **Android Web Share Target:** PWA manifest configures `share_target: { action: '/share', method: 'GET', params: { title: 'title', text: 'text', url: 'url' } }` for sub-50ms link capturing.
+## 1. System Architecture & Constraints
+1. **Cloudflare Serverless Stack:** Cloudflare Workers (V8 Isolates) + Hono TS + Cloudflare D1 (SQLite) + Cloudflare Email Service (`env.Mail_Pass`).
+2. **Deterministic Email MIME Envelope:** Cloudflare Workers' `send_email` requires a strict RFC 5322 multipart MIME string passed as `new EmailMessage(from, to, rawMime)`.
+3. **Web Share Target Method:** Use `method: 'GET'` in PWA manifests for URL/text sharing to ensure sub-50ms link capturing without Service Worker POST friction.
+4. **Offline-First Tombstone Deletion:** In Dexie.js, deletions write a tombstone record with `isDeleted: true` and a fresh `updatedAt` timestamp to prevent resurrected data across devices.
+5. **Back-Button Trapping:** In SPAs and PWAs on Android, overlay dialogs MUST push a synthetic history entry (`history.pushState({ appOverlay: true }, "")`) and listen to `popstate` to close the modal rather than exiting the application.
 
 ---
 
-## 3. Universal Media & Link Metadata Scraper
-- **Tier 1 (Fast-Path APIs):** GitHub API + social card preview, Wikipedia summary API, YouTube oEmbed, Spotify oEmbed, Reddit JSON, AniList GraphQL.
-- **Tier 2 (HTML & Schema.org):** Extracts OpenGraph (`og:image`), Twitter cards (`twitter:image`), Schema.org JSON-LD (`Article`, `Product`, `VideoObject`).
-- **Tier 3 (Anti-Bot Bypass):** Microlink API fallback for Cloudflare Turnstile or JS-rendered websites.
+## 2. Reusable Code Snippets
 
----
+### PBKDF2 Web Crypto Password Hashing
+```typescript
+export async function hashPassword(password: string): Promise<string> {
+  const enc = new TextEncoder();
+  const salt = crypto.getRandomValues(new Uint8Array(16));
+  const keyMaterial = await crypto.subtle.importKey("raw", enc.encode(password), { name: "PBKDF2" }, false, ["deriveBits"]);
+  const hash = await crypto.subtle.deriveBits({ name: "PBKDF2", salt, iterations: 100000, hash: "SHA-256" }, keyMaterial, 256);
+  const toHex = (buf: ArrayBuffer | Uint8Array) => Array.from(new Uint8Array(buf)).map((b) => b.toString(16).padStart(2, "0")).join("");
+  return `${toHex(salt)}:${toHex(hash)}`;
+}
+```
 
-## 4. Native Back-Button Navigation Protection
-- **Problem:** Pressing hardware/browser Back in a PWA closes the application instead of the open modal dialog.
-- **Solution:** `useModalBackNavigation` hook pushes `history.pushState({ modalOpen: true }, "")` on open and closes the modal on `popstate`.
+### RFC 5322 Multipart MIME Builder
+```typescript
+export function buildRawMimeEmail(from: string, to: string, subject: string, html: string, plainText: string): string {
+  const boundary = `----=_Part_${Date.now()}_${Math.random().toString(36).slice(2)}`;
+  const encodedSubject = `=?UTF-8?B?${btoa(unescape(encodeURIComponent(subject)))}?=`;
+  const base64Html = btoa(unescape(encodeURIComponent(html)));
+  const base64Text = btoa(unescape(encodeURIComponent(plainText)));
+  return [
+    `From: Security Team <${from}>`,
+    `To: <${to}>`,
+    `Subject: ${encodedSubject}`,
+    `MIME-Version: 1.0`,
+    `Content-Type: multipart/alternative; boundary="${boundary}"`,
+    ``,
+    `--${boundary}`,
+    `Content-Type: text/plain; charset=UTF-8`,
+    `Content-Transfer-Encoding: base64`,
+    ``,
+    base64Text,
+    ``,
+    `--${boundary}`,
+    `Content-Type: text/html; charset=UTF-8`,
+    `Content-Transfer-Encoding: base64`,
+    ``,
+    base64Html,
+    ``,
+    `--${boundary}--`,
+  ].join("\r\n");
+}
+```
+
+### useModalBackNavigation Hook
+```typescript
+export function useModalBackNavigation(overlays: { isOpen: boolean; close: () => void }[]) {
+  const isPushedRef = useRef(false);
+  const anyOpen = overlays.some((o) => o.isOpen);
+
+  useEffect(() => {
+    if (anyOpen && !isPushedRef.current) {
+      window.history.pushState({ appOverlay: true }, '');
+      isPushedRef.current = true;
+    } else if (!anyOpen && isPushedRef.current) {
+      isPushedRef.current = false;
+      if (window.history.state?.appOverlay) window.history.back();
+    }
+  }, [anyOpen]);
+
+  useEffect(() => {
+    const handlePopState = () => {
+      if (isPushedRef.current) {
+        isPushedRef.current = false;
+        overlays.forEach((o) => { if (o.isOpen) o.close(); });
+      }
+    };
+    window.addEventListener('popstate', handlePopState);
+    return () => window.removeEventListener('popstate', handlePopState);
+  }, [overlays]);
+}
+```
