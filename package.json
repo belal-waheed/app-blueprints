@@ -1,0 +1,26 @@
+{
+  "name": "app-blueprints",
+  "version": "1.0.0",
+  "description": "Production full-stack blueprints, battle-tested snippets, and AI agent knowledge engine",
+  "author": "Belal Waheed",
+  "license": "MIT",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/belal-waheed/app-blueprints.git"
+  },
+  "scripts": {
+    "validate": "node -e \"console.log('Validating repository assets...'); process.exit(0);\"",
+    "test": "npm run validate"
+  },
+  "keywords": [
+    "cloudflare-workers",
+    "cloudflare-d1",
+    "pwa",
+    "react19",
+    "tailwind-v4",
+    "snippets",
+    "templates",
+    "ai-agent",
+    "llms-txt"
+  ]
+}

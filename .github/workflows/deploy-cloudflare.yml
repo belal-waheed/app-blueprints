@@ -1,13 +1,16 @@
-name: Deploy to Cloudflare Workers
+name: Validate Repository & Metadata
 
 on:
   push:
     branches: [main]
+  pull_request:
+    branches: [main]
+  workflow_dispatch:
 
 jobs:
-  deploy:
+  validate:
     runs-on: ubuntu-latest
-    name: Build & Deploy
+    name: Validate Assets & Standards
     steps:
       - uses: actions/checkout@v4
 
@@ -20,14 +23,17 @@ jobs:
       - name: Install Dependencies
         run: npm ci
 
-      - name: Run Test Suite
-        run: npm test
-
-      - name: Build Application
-        run: npm run build
-
-      - name: Deploy to Cloudflare
-        uses: cloudflare/wrangler-action@v3
-        with:
-          apiToken: ${{ secrets.CLOUDFLARE_API_TOKEN }}
-          accountId: ${{ secrets.CLOUDFLARE_ACCOUNT_ID }}
+      - name: Validate Repository Metadata & Snippets
+        run: |
+          npm test
+          echo "Validating JSON configs integrity..."
+          node -e "
+            const fs = require('fs');
+            const files = ['twa-manifest.json', 'configs/dns/is-a-dev-template.json', 'package.json'];
+            files.forEach(f => {
+              if (fs.existsSync(f)) {
+                JSON.parse(fs.readFileSync(f, 'utf8'));
+                console.log('✓ Valid JSON:', f);
+              }
+            });
+          "

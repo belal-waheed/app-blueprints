@@ -1,0 +1,9 @@
+{
+  "owner": {
+    "username": "your-github-username",
+    "email": "your-email@domain.com"
+  },
+  "records": {
+    "URL": "https://your-worker.workers.dev"
+  }
+}

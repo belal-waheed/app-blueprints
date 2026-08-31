@@ -1,0 +1,24 @@
+{
+  "packageId": "com.markbel.vault",
+  "host": "mark.obel.workers.dev",
+  "name": "Markbel",
+  "launcherName": "Markbel",
+  "themeColor": "#090d16",
+  "navigationColor": "#090d16",
+  "backgroundColor": "#090d16",
+  "enableNotifications": true,
+  "startUrl": "/",
+  "iconUrl": "https://mark.obel.workers.dev/pwa-512x512.png",
+  "maskableIconUrl": "https://mark.obel.workers.dev/pwa-512x512.png",
+  "appVersionCode": 2,
+  "appVersionName": "2.1.0",
+  "shareTarget": {
+    "action": "/share",
+    "method": "GET",
+    "params": {
+      "title": "title",
+      "text": "text",
+      "url": "url"
+    }
+  }
+}

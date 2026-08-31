@@ -1,0 +1,30 @@
+name: Headless Microsoft Edge E2E Tests
+
+# NOTE: This is a reusable reference workflow template for your projects.
+# Copy this file into your project's .github/workflows/test-edge.yml
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+    branches: [main]
+  workflow_dispatch:
+
+jobs:
+  test-edge:
+    runs-on: windows-latest
+    name: Playwright Edge Automation
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          cache: 'npm'
+
+      - name: Install Dependencies
+        run: npm ci
+
+      - name: Run Headless Edge Test Harness
+        run: npx playwright test --project=msedge
