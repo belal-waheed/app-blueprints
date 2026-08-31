@@ -20,7 +20,8 @@
 - [Sync: LWW Conflict Resolution](snippets/sync-offline/lww-merge-algorithm.ts): Last-Write-Wins deterministic record merging.
 - [Sync: Tombstone Deletions](snippets/sync-offline/tombstone-delete-handler.ts): Soft-delete persistence for multi-device sync.
 - [Sync: BroadcastChannel Reactivity](snippets/sync-offline/broadcast-channel-sync.ts): Cross-tab live synchronization.
-- [Scraping: Multi-Tier Metadata Extractor](snippets/scraping/multi-tier-metadata.ts): GitHub, Wikipedia, YouTube, Spotify, Reddit, AniList scrapers.
+- [Scraping: Multi-Tier Metadata Extractor](snippets/scraping/multi-tier-metadata.ts): Unified extraction engine with SSRF defense, tracking sanitizer, media adapters (YouTube, TikTok, X, GitHub, Wikipedia, Reddit, Spotify), JSON-LD parser, and @extractus/article-extractor reader mode & reading time calculation.
+- [Scraping: Smart Domain Auto-Grouper](snippets/scraping/smart-auto-grouper.ts): Zero-dependency domain auto-grouper mapping URLs into smart groups (YT, Insta, X) with custom vault scoping.
 - [Scraping: Anti-Bot Cloud Bypass](snippets/scraping/microlink-anti-bot-cloud.ts): Headless cloud renderer for 403-protected pages.
 - [UI: Back-Button Modal Trapper](snippets/ui-navigation/modal-back-navigation.ts): Android back gesture and popstate navigation handler.
 - [Testing: Microsoft Edge Playwright Harness](snippets/testing-automation/edge-playwright-harness.ts): Headless Edge browser automation config.
